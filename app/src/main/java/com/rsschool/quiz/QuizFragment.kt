@@ -1,17 +1,13 @@
 package com.rsschool.quiz
 
 import android.content.Context
-import android.content.res.Configuration
-import android.graphics.Color
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.rsschool.quiz.databinding.FragmentQuizBinding
-import android.util.Log
 
 interface QuizInterface {
     fun setQuestion(questionCount: Int = 0, answers: MutableList<Int> = mutableListOf<Int>(), reset: Boolean = true)
@@ -36,7 +32,7 @@ class QuizFragment : Fragment() {
             reset = bundle?.getBoolean(RESET) ?: false
             if(!reset) {
                 currentAnswers = bundle?.getIntArray(ANSWERS)?.toMutableList() ?: mutableListOf<Int>()
-                questionCount = bundle?.getInt(QUESTION_COUNT) ?: 0
+                questionCount = bundle?.getInt(QUESTION_NUMBER) ?: 0
             }
         } catch (e: Throwable) { }
 
@@ -100,13 +96,13 @@ class QuizFragment : Fragment() {
 
         binding?.toolbar?.getChildAt(1)?.setOnClickListener {
             questionCount -= 1
-            quizInterface?.setQuestion(questionCount, currentAnswers, reset)
+            quizInterface?.setQuestion(questionCount, currentAnswers, false)
             updateState()
         }
 
         binding?.previousButton?.setOnClickListener {
             questionCount -= 1
-            quizInterface?.setQuestion(questionCount, currentAnswers, reset)
+            quizInterface?.setQuestion(questionCount, currentAnswers, false)
             updateState()
         }
 
@@ -117,7 +113,7 @@ class QuizFragment : Fragment() {
                 quizInterface?.setResult(currentAnswers, score)
             } else {
                 binding?.toolbar?.title = "Question #$questionCount"
-                quizInterface?.setQuestion(questionCount, currentAnswers, reset)
+                quizInterface?.setQuestion(questionCount, currentAnswers, false)
                 updateState()
             }
         }
@@ -167,7 +163,7 @@ class QuizFragment : Fragment() {
     companion object {
 
         private const val RESET = "RESET"
-        private const val QUESTION_COUNT = "QUESTIONS_COUNT"
+        private const val QUESTION_NUMBER = "QUESTIONS_COUNT"
         private const val ANSWERS = "ANSWERS"
 
         @JvmStatic
@@ -176,7 +172,7 @@ class QuizFragment : Fragment() {
             val bundle = bundleOf(
                 Pair(RESET, reset),
                 Pair(ANSWERS, answers),
-                Pair(QUESTION_COUNT, questionCount)
+                Pair(QUESTION_NUMBER, questionCount)
             )
 
             fragment.arguments = bundle
