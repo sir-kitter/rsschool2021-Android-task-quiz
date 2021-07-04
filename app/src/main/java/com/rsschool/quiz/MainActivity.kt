@@ -25,6 +25,17 @@ class MainActivity : AppCompatActivity(), QuizInterface, ResultsInterface {
     }
 
     override fun setQuestion(questionCount: Int, answers: MutableList<Int>, reset: Boolean) {
+
+        setTheme(when (questionCount) {
+            0 -> R.style.Theme_Quiz_First
+            1 -> R.style.Theme_Quiz_Second
+            2 -> R.style.Theme_Quiz_Third
+            3 -> R.style.Theme_Quiz_Fourth
+            4 -> R.style.Theme_Quiz_Fifth
+            else -> R.style.ThemeOverlay_MaterialComponents_Dark
+        })
+
+
         supportFragmentManager
             .beginTransaction()
             .replace(binding.frameLayout.id, QuizFragment.newInstance(questionCount, answers.toIntArray(), reset))
