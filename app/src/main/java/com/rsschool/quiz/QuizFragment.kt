@@ -46,6 +46,11 @@ class QuizFragment : Fragment() {
     }
 
     private fun updateState() {
+        //(activity as? MainActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(questionNumber != 0)
+        if(questionNumber == 0) {
+            binding?.toolbar?.navigationIcon = null
+        }
+
         binding?.apply {
             toolbar.title = "Question #${1 + questionNumber}"
             question.text = Questions.questions[questionNumber].text
@@ -134,10 +139,6 @@ class QuizFragment : Fragment() {
             }
             binding?.nextButton?.isEnabled = true
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onAttach(context: Context) {
