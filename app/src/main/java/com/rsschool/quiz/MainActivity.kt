@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity(), QuizInterface, ResultsInterface {
     override fun setQuestion(questionCount: Int, answers: MutableList<Int>, reset: Boolean) {
         supportFragmentManager
             .beginTransaction()
-            .replace(binding.frameLayout.id, QuizFragment.newInstance(questionCount, answers, reset))
+            .replace(binding.frameLayout.id, QuizFragment.newInstance(questionCount, answers.toIntArray(), reset))
             .commit()
     }
 

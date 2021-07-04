@@ -50,7 +50,7 @@ class ResultsFragment : Fragment() {
         var result = "Score: $score\n"
         answers.forEachIndexed { index, answer ->
             result += "${(index+1).toString(10)}. ${Questions.questions[index].text}\n"
-            result += "- ${Questions.questions[index].answers[answer]}"
+            result += "- ${Questions.questions[index].answers[answer].answer}\n"
         }
         return result
     }

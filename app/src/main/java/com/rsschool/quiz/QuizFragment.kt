@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.rsschool.quiz.databinding.FragmentQuizBinding
+import android.util.Log
 
 interface QuizInterface {
     fun setQuestion(questionCount: Int = 0, answers: MutableList<Int> = mutableListOf<Int>(), reset: Boolean = true)
@@ -31,11 +32,11 @@ class QuizFragment : Fragment() {
         var bundle: Bundle? = null
         reset = false
         try {
-            bundle = requireArguments()
-            reset = bundle.getBoolean(RESET)
+            bundle = arguments
+            reset = bundle?.getBoolean(RESET) ?: false
             if(!reset) {
-                currentAnswers = bundle.getIntArray(ANSWERS)?.toMutableList() ?: mutableListOf<Int>()
-                questionCount = bundle.getInt(QUESTION_COUNT)
+                currentAnswers = bundle?.getIntArray(ANSWERS)?.toMutableList() ?: mutableListOf<Int>()
+                questionCount = bundle?.getInt(QUESTION_COUNT) ?: 0
             }
         } catch (e: Throwable) { }
 
@@ -122,6 +123,16 @@ class QuizFragment : Fragment() {
         }
 
         binding?.radioGroup?.setOnCheckedChangeListener { _, radioId ->
+//            Log.i("rid", radioId.toString())
+//            Log.i("qc", questionCount.toString())
+//            Log.i("ca.sz", currentAnswers.size.toString())
+//            Log.i("ca", currentAnswers.joinToString(", "))
+//            Log.i("1id", binding?.optionOne?.id.toString())
+//            Log.i("2id", binding?.optionTwo?.id.toString())
+//            Log.i("3id", binding?.optionThree?.id.toString())
+//            Log.i("4id", binding?.optionFour?.id.toString())
+//            Log.i("5id", binding?.optionFive?.id.toString())
+
             if(questionCount >= currentAnswers.size) {
                 //currentAnswers.add(0)
                 growAnswers()
@@ -160,7 +171,7 @@ class QuizFragment : Fragment() {
         private const val ANSWERS = "ANSWERS"
 
         @JvmStatic
-        fun newInstance(questionCount: Int = 0, answers: MutableList<Int> = mutableListOf<Int>(), reset: Boolean = true): QuizFragment {
+        fun newInstance(questionCount: Int = 0, answers: IntArray = intArrayOf(), reset: Boolean = true): QuizFragment {
             val fragment = QuizFragment()
             val bundle = bundleOf(
                 Pair(RESET, reset),
