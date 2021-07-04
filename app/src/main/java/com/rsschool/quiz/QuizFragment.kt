@@ -20,7 +20,7 @@ class QuizFragment : Fragment() {
     private var binding: FragmentQuizBinding? = null
     private var reset: Boolean = false
     private var currentAnswers = mutableListOf<Int>()
-    private var questionCount = 0
+    private var questionNumber = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View?
@@ -32,7 +32,7 @@ class QuizFragment : Fragment() {
             reset = bundle?.getBoolean(RESET) ?: false
             if(!reset) {
                 currentAnswers = bundle?.getIntArray(ANSWERS)?.toMutableList() ?: mutableListOf<Int>()
-                questionCount = bundle?.getInt(QUESTION_NUMBER) ?: 0
+                questionNumber = bundle?.getInt(QUESTION_NUMBER) ?: 0
             }
         } catch (e: Throwable) { }
 
@@ -47,21 +47,21 @@ class QuizFragment : Fragment() {
 
     private fun updateState() {
         binding?.apply {
-            toolbar.title = "Question #$questionCount"
-            question.text = Questions.questions[questionCount].text
-            optionOne.text = Questions.questions[questionCount].answers[0].answer
-            optionTwo.text = Questions.questions[questionCount].answers[1].answer
-            optionThree.text = Questions.questions[questionCount].answers[2].answer
-            optionFour.text = Questions.questions[questionCount].answers[3].answer
-            optionFive.text = Questions.questions[questionCount].answers[4].answer
+            toolbar.title = "Question #${1 + questionNumber}"
+            question.text = Questions.questions[questionNumber].text
+            optionOne.text = Questions.questions[questionNumber].answers[0].answer
+            optionTwo.text = Questions.questions[questionNumber].answers[1].answer
+            optionThree.text = Questions.questions[questionNumber].answers[2].answer
+            optionFour.text = Questions.questions[questionNumber].answers[3].answer
+            optionFive.text = Questions.questions[questionNumber].answers[4].answer
 
-            previousButton.isEnabled = questionCount > 0
-            if(currentAnswers.size <= questionCount) {
+            previousButton.isEnabled = questionNumber > 0
+            if(currentAnswers.size <= questionNumber) {
                 nextButton.isEnabled = false
                 radioGroup.clearCheck()
             }
             else {
-                when(currentAnswers[questionCount]) {
+                when(currentAnswers[questionNumber]) {
                     0 -> optionOne
                     1 -> optionTwo
                     2 -> optionThree
@@ -69,7 +69,7 @@ class QuizFragment : Fragment() {
                     else -> optionFive
                 }.isChecked = true
 
-                nextButton.text = if (questionCount == 4) "submit" else "next"
+                nextButton.text = if (questionNumber == 4) "submit" else "next"
             }
         }
     }
@@ -83,7 +83,7 @@ class QuizFragment : Fragment() {
     }
 
     private fun advanceQuestion() {
-        questionCount += 1
+        questionNumber += 1
     }
     private fun growAnswers(value : Int = 0) {
         currentAnswers.add(value)
@@ -95,45 +95,36 @@ class QuizFragment : Fragment() {
         updateState()
 
         binding?.toolbar?.getChildAt(1)?.setOnClickListener {
-            questionCount -= 1
-            quizInterface?.setQuestion(questionCount, currentAnswers, false)
+            questionNumber -= 1
+            quizInterface?.setQuestion(questionNumber, currentAnswers, false)
             updateState()
         }
 
         binding?.previousButton?.setOnClickListener {
-            questionCount -= 1
-            quizInterface?.setQuestion(questionCount, currentAnswers, false)
+            questionNumber -= 1
+            quizInterface?.setQuestion(questionNumber, currentAnswers, false)
             updateState()
         }
 
         binding?.nextButton?.setOnClickListener {
             advanceQuestion()
-            if (questionCount == 5) {
+            if (questionNumber == 5) {
                 val score = calcScore()
                 quizInterface?.setResult(currentAnswers, score)
             } else {
-                binding?.toolbar?.title = "Question #$questionCount"
-                quizInterface?.setQuestion(questionCount, currentAnswers, false)
+                binding?.toolbar?.title = "Question #${1 + questionNumber}"
+                quizInterface?.setQuestion(questionNumber, currentAnswers, false)
                 updateState()
             }
         }
 
         binding?.radioGroup?.setOnCheckedChangeListener { _, radioId ->
-//            Log.i("rid", radioId.toString())
-//            Log.i("qc", questionCount.toString())
-//            Log.i("ca.sz", currentAnswers.size.toString())
-//            Log.i("ca", currentAnswers.joinToString(", "))
-//            Log.i("1id", binding?.optionOne?.id.toString())
-//            Log.i("2id", binding?.optionTwo?.id.toString())
-//            Log.i("3id", binding?.optionThree?.id.toString())
-//            Log.i("4id", binding?.optionFour?.id.toString())
-//            Log.i("5id", binding?.optionFive?.id.toString())
 
-            if(questionCount >= currentAnswers.size) {
+            if(questionNumber >= currentAnswers.size) {
                 //currentAnswers.add(0)
                 growAnswers()
             }
-            currentAnswers[questionCount] = when (radioId) {
+            currentAnswers[questionNumber] = when (radioId) {
                 binding?.optionOne?.id -> 0
                 binding?.optionTwo?.id ->  1
                 binding?.optionThree?.id -> 2
@@ -167,12 +158,12 @@ class QuizFragment : Fragment() {
         private const val ANSWERS = "ANSWERS"
 
         @JvmStatic
-        fun newInstance(questionCount: Int = 0, answers: IntArray = intArrayOf(), reset: Boolean = true): QuizFragment {
+        fun newInstance(questionNumber: Int = 0, answers: IntArray = intArrayOf(), reset: Boolean = true): QuizFragment {
             val fragment = QuizFragment()
             val bundle = bundleOf(
                 Pair(RESET, reset),
                 Pair(ANSWERS, answers),
-                Pair(QUESTION_NUMBER, questionCount)
+                Pair(QUESTION_NUMBER, questionNumber)
             )
 
             fragment.arguments = bundle
